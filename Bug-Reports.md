@@ -23,7 +23,7 @@
      ```
 * **Expected Result:** Server validates the payload and returns `400 Bad Request`.
 * **Actual Result:** Server crashes and returns `500 Internal Server Error`.
-* **Attachments / Evidence:** Postman Runner & Newman HTML Report (`AssertionError: expected response to have status code 400 but got 500`).
+
 
 ---
 
@@ -38,4 +38,3 @@
   2. Send a `PUT` request to `https://restful-booker.herokuapp.com/booking/999999999` with header `Cookie: token=<valid_token>` and a complete valid booking JSON body.
 * **Expected Result:** Server returns `404 Not Found` because the target booking resource does not exist.
 * **Actual Result:** Server returns `405 Method Not Allowed`.
-* **Attachments / Evidence:** Postman Runner & Newman HTML Report (`AssertionError: expected response to have status code 404 but got 405`).
