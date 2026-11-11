@@ -1,0 +1,42 @@
+name: Restful-Booker API Automation
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  test-api:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 2. Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 3. Install Newman and HTML Reporter
+        run: |
+          npm install -g newman newman-reporter-htmlextra
+
+      - name: 4. Run API Tests via Newman
+        run: |
+          newman run Restful-Booker.postman_collection.json \
+            --env-var "baseUrl=https://restful-booker.herokuapp.com" \
+            --env-var "username=${{ secrets.BOOKER_USERNAME }}" \
+            --env-var "password=${{ secrets.BOOKER_PASSWORD }}" \
+            -r cli,htmlextra \
+            --reporter-htmlextra-export newman/report.html \
+            -x
+
+      - name: 5. Upload HTML Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: restful-booker-html-report
+          path: newman/report.html

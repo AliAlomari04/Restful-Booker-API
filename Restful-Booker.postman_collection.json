@@ -86,35 +86,6 @@
       "name": "Booking CRUD",
       "item": [
         {
-          "name": "booking by id",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const bookingSchema = {\r\n    \"type\": \"object\",\r\n    required: [\r\n        \"firstname\",\r\n        \"lastname\",\r\n        \"totalprice\",\r\n        \"depositpaid\",\r\n        \"bookingdates\"\r\n    ],\r\n    properties: {\r\n        \"firstname\": {type : 'string'},\r\n        \"lastname\": { type: 'string' },\r\n        \"totalprice\": { type: 'number' },\r\n        \"depositpaid\": { type: 'boolean' },\r\n        \"bookingdates\": {\r\n            type : 'object',\r\n            required: ['checkin', 'checkout'],\r\n            properties: {\r\n                \"checkin\": { type: 'string', pattern: '^\\\\d{4}-\\\\d{2}-\\\\d{2}$' },\r\n                \"checkout\": {type: 'string', pattern: '^\\\\d{4}-\\\\d{2}-\\\\d{2}$'}\r\n            }\r\n        },\r\n        \"additionalneeds\": { type: 'string' }\r\n    }\r\n}\r\n\r\n\r\npm.test(\"Validate JSON schema\", function(){\r\n    pm.response.to.have.jsonSchema(bookingSchema)\r\n})\r\n\r\npm.test(\"Header\", function() {\r\n    pm.response.to.have.header(\"Content-Type\")\r\n})"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/booking/{{bookingId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "booking",
-                "{{bookingId}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
           "name": "Create a booking",
           "event": [
             {
@@ -146,6 +117,35 @@
               ],
               "path": [
                 "booking"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "booking by id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const bookingSchema = {\r\n    \"type\": \"object\",\r\n    required: [\r\n        \"firstname\",\r\n        \"lastname\",\r\n        \"totalprice\",\r\n        \"depositpaid\",\r\n        \"bookingdates\"\r\n    ],\r\n    properties: {\r\n        \"firstname\": {type : 'string'},\r\n        \"lastname\": { type: 'string' },\r\n        \"totalprice\": { type: 'number' },\r\n        \"depositpaid\": { type: 'boolean' },\r\n        \"bookingdates\": {\r\n            type : 'object',\r\n            required: ['checkin', 'checkout'],\r\n            properties: {\r\n                \"checkin\": { type: 'string', pattern: '^\\\\d{4}-\\\\d{2}-\\\\d{2}$' },\r\n                \"checkout\": {type: 'string', pattern: '^\\\\d{4}-\\\\d{2}-\\\\d{2}$'}\r\n            }\r\n        },\r\n        \"additionalneeds\": { type: 'string' }\r\n    }\r\n}\r\n\r\n\r\npm.test(\"Validate JSON schema\", function(){\r\n    pm.response.to.have.jsonSchema(bookingSchema)\r\n})\r\n\r\npm.test(\"Header\", function() {\r\n    pm.response.to.have.header(\"Content-Type\")\r\n})"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/booking/{{bookingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "booking",
+                "{{bookingId}}"
               ]
             }
           },
@@ -199,6 +199,17 @@
         },
         {
           "name": "Partial update booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200 and firstname is updated\", function () {\r\n    pm.response.to.have.status(200);\r\n    pm.expect(pm.response.json().firstname).to.be.a(\"string\");\r\n});"
+                ]
+              }
+            }
+          ],
           "request": {
             "auth": {
               "type": "noauth"
@@ -234,6 +245,17 @@
         },
         {
           "name": "Delete a booking",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", function () {\r\n    pm.response.to.have.status(201);\r\n});"
+                ]
+              }
+            }
+          ],
           "request": {
             "auth": {
               "type": "basic",
@@ -504,7 +526,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const jsonData = pm.response.json();\r\nconst booking = jsonData.booking;\r\n\r\npm.collectionVariables.set(\"bookingId\", jsonData.bookingid)\r\n\r\npm.test(\"Check Data Types of Booking Response\", function () {\r\n    pm.expect(jsonData.bookingid).to.be.a(\"number\");\r\n    pm.expect(booking.firstname).to.be.a(\"string\");\r\n    pm.expect(booking.lastname).to.be.a(\"string\");\r\n    pm.expect(booking.totalprice).to.be.a(\"number\");\r\n    pm.expect(booking.depositpaid).to.be.a(\"boolean\");\r\n    pm.expect(booking.bookingdates).to.be.an(\"object\");\r\n    pm.expect(booking.additionalneeds).to.be.a(\"string\");\r\n    pm.expect(pm.response.responseTime).to.be.below(2000)\r\n});\r\n\r\npm.test(\"Check date format using Regex\", function() {\r\n    const datePattern = /^\\d{4}-\\d{2}-\\d{2}$/;\r\n\r\n    pm.expect(booking.bookingdates.checkin).to.match(datePattern);\r\n    pm.expect(booking.bookingdates.checkout).to.match(datePattern);\r\n})"
+                  "// الاختبار القياسي المتوقع هو 400 Bad Request\r\npm.test(\"Verify status code is 400 Bad Request for missing fields\", function () {\r\n    pm.response.to.have.status(400);\r\n});"
                 ]
               }
             }
